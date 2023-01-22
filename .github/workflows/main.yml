@@ -5,6 +5,8 @@ on:
       - main
 env:
   SPRINT: 0
+  MONTH: null
+  YEAR: null
 jobs:
   build:
     runs-on: ubuntu-latest
