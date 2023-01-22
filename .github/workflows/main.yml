@@ -1,23 +1,17 @@
 name: CI
 on:
-  pull_request_target:
+  push:
     branches:
       - main
-    types:
-      - opened
 env:
   SPRINT: 0
   MONTH: null
   YEAR: null
   SEM: null
 
-permissions:
-  contents: read
-  issues: write
-  pull-requests: write
-
 jobs:
   build:
+    permissions: write-all
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3.3.0
@@ -33,6 +27,7 @@ jobs:
           name: Release ${{ steps.tag_version.outputs.new_tag }}
           body: ${{ steps.tag_version.outputs.changelog }}
   new_branch:
+    permissions: write-all
     runs-on: ubuntu-latest
     needs: build
     steps:
@@ -45,7 +40,7 @@ jobs:
         if: "${{ env.MONTH >= 1 && env.MONTH <= 6 }}"
         run: echo "SEM=s" >> $GITHUB_ENV
       - name: check for fall semester
-        if: "${{ env.MONTH >= 7 && env.MONTH <= 12}}"
+        if: "${{ env.MONTH >= 7 && env.MONTH <= 12 }}"
         run: echo "SEM=f" >> $GITHUB_ENV
       - name: Set sprint number
         run: echo "SPRINT="${{ env.SPRINT }}+1" >> $GITHUB_STATE
