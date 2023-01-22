@@ -8,7 +8,12 @@ env:
   MONTH: null
   YEAR: null
   SEM: null
-  
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
