@@ -1,8 +1,5 @@
 name: CI
 on:
-  issues:
-    types:
-      - opened
   pull_request_target:
     branches:
       - main
