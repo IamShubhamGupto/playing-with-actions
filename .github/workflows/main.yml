@@ -1,0 +1,49 @@
+name: CI
+on:
+  push:
+    branches:
+      - main
+env:
+  SPRINT: 0
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create a GitHub release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.tag_version.outputs.new_tag }}
+          name: Release ${{ steps.tag_version.outputs.new_tag }}
+          body: ${{ steps.tag_version.outputs.changelog }}
+  new_branch:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Set current year as env variable
+        run: echo "YEAR=$(date +'%y')" >> $GITHUB_ENV
+      - name: Set current month as env variable
+        run: echo "MONTH=$(date +'%m')" >> $GITHUB_ENV
+
+      - name: check for spring semester
+        if: "${{MONTH >= 1 && MONTH <= 6}}"
+        run: echo "SEM=s" >> $GITHUB_ENV
+      - name: check for fall semester
+        if: "${{MONTH >= 7 && MONTH <= 12}}"
+        run: echo "SEM=f" >> $GITHUB_ENV
+      - name: Set sprint number
+        run: echo "{SPRINT}="{SPRINT}+1" >> $GITHUB_STATE
+
+      - name: make new branch
+        uses: peterjgrainger/action-create-branch@v2.3.0
+        env:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          branch: "refs/heads/spring/${{SEM}}${{YEAR}}/${{SPRINT}}"
+          sha: '${{ github.event.pull_request.head.sha }}'
+        
