@@ -4,7 +4,7 @@ on:
     branches:
       - main
 env:
-  SPRINT: 0
+  # SPRINT: 0
   MONTH: null
   YEAR: null
   SEM: null
