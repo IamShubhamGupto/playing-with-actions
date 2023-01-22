@@ -2,12 +2,13 @@ name: CI
 on:
   push:
     branches:
-      - main
+      - 'main'
 env:
   SPRINT: 0
   MONTH: null
   YEAR: null
   SEM: null
+  GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
 jobs:
   build:
@@ -18,8 +19,6 @@ jobs:
       - name: Bump version and push tag
         id: tag_version
         uses: mathieudutour/github-tag-action@v6.1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Create a GitHub release
         uses: ncipollo/release-action@v1
         with:
@@ -47,8 +46,6 @@ jobs:
 
       - name: make new branch
         uses: peterjgrainger/action-create-branch@v2.3.0
-        env:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
         with:
           branch: "refs/heads/sprint/${{ env.SEM }}${{ env.YEAR }}/${{ env.SPRINT }}"
           sha: '${{ github.event.pull_request.head.sha }}'
