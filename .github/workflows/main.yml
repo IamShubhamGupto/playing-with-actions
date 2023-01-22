@@ -1,20 +1,13 @@
 name: CI
 on:
-  pull_request_target:
+  push:
     branches:
-      - main
-    types:
-      - opened
+      - 'main'
 env:
   SPRINT: 0
   MONTH: null
   YEAR: null
   SEM: null
-
-permissions:
-  contents: read
-  issues: write
-  pull-requests: write
 
 jobs:
   build:
