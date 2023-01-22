@@ -7,6 +7,8 @@ env:
   SPRINT: 0
   MONTH: null
   YEAR: null
+  SEM: null
+  
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -33,19 +35,19 @@ jobs:
         run: echo "MONTH=$(date +'%m')" >> $GITHUB_ENV
 
       - name: check for spring semester
-        if: "${{$MONTH >= 1 && $MONTH <= 6}}"
+        if: "${{ env.MONTH >= 1 && env.MONTH <= 6 }}"
         run: echo "SEM=s" >> $GITHUB_ENV
       - name: check for fall semester
-        if: "${{$MONTH >= 7 && $MONTH <= 12}}"
+        if: "${{ env.MONTH >= 7 && env.MONTH <= 12}}"
         run: echo "SEM=f" >> $GITHUB_ENV
       - name: Set sprint number
-        run: echo "SPRINT="$SPRINT+1" >> $GITHUB_STATE
+        run: echo "SPRINT="${{ env.SPRINT }}+1" >> $GITHUB_STATE
 
       - name: make new branch
         uses: peterjgrainger/action-create-branch@v2.3.0
         env:
           github_token: ${{ secrets.GITHUB_TOKEN }}
         with:
-          branch: "refs/heads/spring/${{SEM}}${{YEAR}}/${{SPRINT}}"
+          branch: "refs/heads/sprint/${{ env.SEM }}${{ env.YEAR }}/${{ env.SPRINT }}"
           sha: '${{ github.event.pull_request.head.sha }}'
         
