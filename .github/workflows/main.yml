@@ -48,8 +48,7 @@ jobs:
         run: echo "SPRINT"=${{ env.SPRINT }}+1 >> $GITHUB_STATE
       - name: Reset sprint count at the beginning of the semester
         if: "${{ (env.MONTH == 1 || env.MONTH == 9) && (env.RESET == false) }}"
-        run: echo "SPRINT"=0 >> $GITHUB_STATE
-        run: echo "RESET"=true >> $GITHUB_STATE
+        run: echo "SPRINT"=0 >> $GITHUB_STATE && echo "RESET"=true >> $GITHUB_STATE
       - name: Reset reset flag once month is over
         if: "${{ env.MONTH != 1 && env.MONTH != 9 }}"
         run: echo "RESET"=false >> $GITHUB_STATE
