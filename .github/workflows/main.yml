@@ -45,6 +45,9 @@ jobs:
         run: echo "SEM=f" >> $GITHUB_ENV
       - name: Set sprint number
         run: echo "SPRINT"=${{ env.SPRINT }}+1 >> $GITHUB_STATE
+      - name: Reset sprint count at the beginning of the semester
+        if: "${{ (env.MONTH == 1 || env.MONTH == 6) && (env.SPRINT > 0) }}"
+        run: echo "SPRINT"=0 >> $GITHUB_STATE
 
       - name: make new branch
         uses: peterjgrainger/action-create-branch@v2.3.0
