@@ -54,7 +54,7 @@ jobs:
             NEW_BRANCH_PREFIX="${NEW_BRANCH_PREFIX}f"
         fi
         NEW_BRANCH_YEAR=$(date +%y)
-        NEW_BRANCH_SPRINT_NUMBER=$(echo "::${steps.get_sprint_number.outputs.sprint_number}::")
+        NEW_BRANCH_SPRINT_NUMBER=${{ steps.get_sprint_number.outputs.sprint_number }}
         NEW_BRANCH="${NEW_BRANCH_PREFIX}${NEW_BRANCH_YEAR}/${NEW_BRANCH_SPRINT_NUMBER}"
         git checkout -b ${NEW_BRANCH}
         git push -u origin ${NEW_BRANCH}
