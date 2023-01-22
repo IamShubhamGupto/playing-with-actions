@@ -1,8 +1,13 @@
 name: CI
 on:
-  push:
+  issues:
+    types:
+      - opened
+  pull_request_target:
     branches:
       - main
+    types:
+      - opened
 env:
   SPRINT: 0
   MONTH: null
