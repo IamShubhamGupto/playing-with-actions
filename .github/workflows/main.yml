@@ -39,7 +39,7 @@ jobs:
         CURRENT_BRANCH=$(echo ${GITHUB_REF} | sed 's|refs/heads/||g')
         SPRINT_NUMBER=$(echo ${CURRENT_BRANCH} | grep -o "[0-9]*$")
         CURRENT_MONTH=$(date +%m)
-        echo "sprint_number=$((SPRINT_NUMBER + 1))" >> GITHUB_OUTPUT
+        echo "sprint_number=$(( SPRINT_NUMBER + 1 ))" >> $GITHUB_OUTPUT
 
     - name: Create new sprint branch
       run: |
