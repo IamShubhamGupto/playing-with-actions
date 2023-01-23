@@ -36,7 +36,7 @@ jobs:
     - name: Get current sprint number
       id: get_sprint_number
       run: |
-        CURRENT_BRANCH=$(echo ${GITHUB_REF} | sed 's|refs/heads/||g')
+        CURRENT_BRANCH=$(git symbolic-ref --short HEAD)
         SPRINT_NUMBER=$(echo ${CURRENT_BRANCH} | grep -o "[0-9]*$")
         CURRENT_MONTH=$(date +%m)
         echo "sprint_number=$(( SPRINT_NUMBER + 1 ))" >> $GITHUB_OUTPUT
