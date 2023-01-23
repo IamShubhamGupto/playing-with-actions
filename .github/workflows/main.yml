@@ -41,7 +41,8 @@ jobs:
         CURRENT_MONTH=$(date +%m)
         echo "sprint_number=$(( SPRINT_NUMBER + 1 ))" >> $GITHUB_OUTPUT
 
-    - name: Create new sprint branch
+    - name: Create new sprint branch name
+      id: get_branch_name
       run: |
         CURRENT_MONTH=$(date +%m)
         NEW_BRANCH_PREFIX="sprint/"
@@ -53,11 +54,18 @@ jobs:
         NEW_BRANCH_YEAR=$(date +%y)
         NEW_BRANCH_SPRINT_NUMBER=${{ steps.get_sprint_number.outputs.sprint_number }}
         NEW_BRANCH="${NEW_BRANCH_PREFIX}${NEW_BRANCH_YEAR}/${NEW_BRANCH_SPRINT_NUMBER}"
-        git pull 
-        git pull origin main
-        git push origin ${CURRENT_BRANCH}
-        git checkout -b ${NEW_BRANCH}
-        git push -u origin ${NEW_BRANCH}
+        echo "new_branch=$(( NEW_BRANCH ))" >> $GITHUB_OUTPUT
+    
+    - name: make new branch
+      id: make_new_branch
+      uses: peterjgrainger/action-create-branch@v2.3.0
+      env:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        branch: "refs/heads/${{ steps.get_branch_name.outputs.new_branch }}"
+        sha: '${{ github.event.pull_request.head.sha }}'
+
+
   # new_branch:
   #   permissions: write-all
   #   runs-on: ubuntu-latest
@@ -105,4 +113,14 @@ jobs:
         #         echo "::set-output name=sprint_number::$((SPRINT_NUMBER))"
         #     fi
         # fi
+
+
+        # more old code
+
+        # echo current = ${CURRENT_BRANCH}
+        # echo new = ${NEW_BRANCH}
+        # git fetch origin
+        # git merge origin ${CURRENT_BRANCH}
+        # git checkout -b ${NEW_BRANCH}
+        # git push -u origin ${NEW_BRANCH}
         
