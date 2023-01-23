@@ -23,43 +23,7 @@ jobs:
           tag: ${{ steps.tag_version.outputs.new_tag }}
           name: Release ${{ steps.tag_version.outputs.new_tag }}
           body: ${{ steps.tag_version.outputs.changelog }}
-  create_sprint_branch:
-    needs: build
-    permissions: write-all
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3.3.0
-    - name: Get current sprint number
-      id: get_sprint_number
-      run: |
-        CURRENT_BRANCH=$(echo ${GITHUB_REF} | sed 's|refs/heads/||g')
-        SPRINT_NUMBER=$(echo ${CURRENT_BRANCH} | grep -o "[0-9]*$")
-        echo "sprint_number=$((SPRINT_NUMBER+1))" >> $GITHUB_OUTPUT
-
-    - name: Create new sprint branch name
-      id: get_branch_name
-      run: |
-        CURRENT_MONTH=$(date +%m)
-        NEW_BRANCH_PREFIX="sprint/"
-        if [[ ${CURRENT_MONTH} -ge 1 ]] && [[ ${CURRENT_MONTH} -le 8 ]]; then
-            NEW_BRANCH_PREFIX="${NEW_BRANCH_PREFIX}s"
-        else
-            NEW_BRANCH_PREFIX="${NEW_BRANCH_PREFIX}f"
-        fi
-        NEW_BRANCH_YEAR="$(date +%y)"
-        NEW_BRANCH_SPRINT_NUMBER="${{ steps.get_sprint_number.outputs.sprint_number }}"
-        NEW_BRANCH=${NEW_BRANCH_PREFIX}${NEW_BRANCH_YEAR}/${NEW_BRANCH_SPRINT_NUMBER}
-        echo "new_branch=${NEW_BRANCH}" >> $GITHUB_OUTPUT
-    
-    - name: make new branch
-      id: make_new_branch
-      uses: peterjgrainger/action-create-branch@v2.3.0
-      env:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        branch: "refs/heads/${{ steps.get_branch_name.outputs.new_branch }}"
-        sha: '${{ github.event.pull_request.head.sha }}'
+  
 
 
   # new_branch:
