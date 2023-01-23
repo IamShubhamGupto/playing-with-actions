@@ -27,6 +27,7 @@ jobs:
           name: Release ${{ steps.tag_version.outputs.new_tag }}
           body: ${{ steps.tag_version.outputs.changelog }}
   create_sprint_branch:
+    needs: build
     permissions: write-all
     runs-on: ubuntu-latest
     steps:
@@ -38,7 +39,7 @@ jobs:
         CURRENT_BRANCH=$(echo ${GITHUB_REF} | sed 's|refs/heads/||g')
         SPRINT_NUMBER=$(echo ${CURRENT_BRANCH} | grep -o "[0-9]*$")
         CURRENT_MONTH=$(date +%m)
-        echo "::set-output name=sprint_number::$((SPRINT_NUMBER + 1))"
+        echo "sprint_number=$((SPRINT_NUMBER + 1))" >> GITHUB_OUTPUT
 
     - name: Create new sprint branch
       run: |
