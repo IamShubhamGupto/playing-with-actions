@@ -3,12 +3,11 @@ on:
   push:
     branches:
       - main
-# env:
-#   MONTH: null
-#   YEAR: null
-#   SEM: null
-#   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#   RESET: false
+env:
+  MONTH: null
+  YEAR: null
+  SEM: null
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   build:
@@ -39,15 +38,8 @@ jobs:
         CURRENT_BRANCH=$(echo ${GITHUB_REF} | sed 's|refs/heads/||g')
         SPRINT_NUMBER=$(echo ${CURRENT_BRANCH} | grep -o "[0-9]*$")
         CURRENT_MONTH=$(date +%m)
-        if [[ ${CURRENT_MONTH} -eq 1 ]] || [[ ${CURRENT_MONTH} -eq 9 ]]; then
-            echo "::set-output name=sprint_number::0"
-        else
-            if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
-                echo "::set-output name=sprint_number::$((SPRINT_NUMBER + 1))"
-            else
-                echo "::set-output name=sprint_number::$((SPRINT_NUMBER))"
-            fi
-        fi
+        echo "::set-output name=sprint_number::$((SPRINT_NUMBER + 1))"
+
     - name: Create new sprint branch
       run: |
         CURRENT_MONTH=$(date +%m)
@@ -60,6 +52,8 @@ jobs:
         NEW_BRANCH_YEAR=$(date +%y)
         NEW_BRANCH_SPRINT_NUMBER=${{ steps.get_sprint_number.outputs.sprint_number }}
         NEW_BRANCH="${NEW_BRANCH_PREFIX}${NEW_BRANCH_YEAR}/${NEW_BRANCH_SPRINT_NUMBER}"
+        git pull origin main
+        git push origin ${CURRENT_BRANCH}
         git checkout -b ${NEW_BRANCH}
         git push -u origin ${NEW_BRANCH}
   # new_branch:
@@ -79,19 +73,34 @@ jobs:
   #       if: "${{ env.MONTH >= 9 && env.MONTH <= 12 }}"
   #       run: echo "SEM=f" >> $GITHUB_ENV
   #     - name: Set sprint number
-  #       run: echo "SPRINT"=${{ env.SPRINT }} + 1 >> $GITHUB_STATE
-      # - name: Reset sprint count at the beginning of the semester
-      #   if: "${{ (env.MONTH == 1 || env.MONTH == 9) && (env.RESET == false) }}"
-      #   run: echo "SPRINT"=0 >> $GITHUB_STATE && echo "RESET"=true >> $GITHUB_STATE
-      # - name: Reset reset flag once month is over
-      #   if: "${{ env.MONTH != 1 && env.MONTH != 9 }}"
-      #   run: echo "RESET"=false >> $GITHUB_STATE
+  #       run: echo "SPRINT"=${{ secrets.SPRINT }} + 1 >> $GITHUB_ENV
+  #     - name: Update secret value
+  #       run: |
+  #         NEW_VALUE=$((SPRINT + 1))
+  #         curl -X PATCH -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -H "Content-Type: application/json" --data "{\"name\":\"SPRINT\",\"value\":\"$NEW_VALUE\"}" https://api.github.com/repos/${{ github.repository }}/actions/secrets/SPRINT
+  #     - name: Reset sprint count at the beginning of the semester
+  #       if: "${{ (env.MONTH == 1 || env.MONTH == 9) && (secrets.SPRINT != false) }}"
+  #       run: echo "SPRINT"=0 >> $GITHUB_STATE 
+  #     # - name: Reset reset flag once month is over
+  #     #   if: "${{ env.MONTH != 1 && env.MONTH != 9 }}"
+  #     #   run: echo "RESET"=false >> $GITHUB_STATE
 
-      # - name: make new branch
-      #   uses: peterjgrainger/action-create-branch@v2.3.0
-      #   env:
-      #     github_token: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     branch: "refs/heads/sprint/${{ env.SEM }}${{ env.YEAR }}/${{ env.SPRINT }}"
-      #     sha: '${{ github.event.pull_request.head.sha }}'
+  #     - name: make new branch
+  #       uses: peterjgrainger/action-create-branch@v2.3.0
+  #       env:
+  #         github_token: ${{ secrets.GITHUB_TOKEN }}
+  #       with:
+  #         branch: "refs/heads/sprint/${{ env.SEM }}${{ env.YEAR }}/${{ env.SPRINT }}"
+  #         sha: '${{ github.event.pull_request.head.sha }}'
+
+  # old code
+          # if [[ ${CURRENT_MONTH} -eq 1 ]] || [[ ${CURRENT_MONTH} -eq 9 ]]; then
+        #     echo "::set-output name=sprint_number::0"
+        # else
+        #     if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
+        #         echo "::set-output name=sprint_number::$((SPRINT_NUMBER + 1))"
+        #     else
+        #         echo "::set-output name=sprint_number::$((SPRINT_NUMBER))"
+        #     fi
+        # fi
         
