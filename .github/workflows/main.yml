@@ -42,7 +42,11 @@ jobs:
         if [[ ${CURRENT_MONTH} -eq 1 ]] || [[ ${CURRENT_MONTH} -eq 9 ]]; then
             echo "::set-output name=sprint_number::0"
         else
-            echo "::set-output name=sprint_number::$((SPRINT_NUMBER))"
+            if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
+                echo "::set-output name=sprint_number::$((SPRINT_NUMBER + 1))"
+            else
+                echo "::set-output name=sprint_number::$((SPRINT_NUMBER))"
+            fi
         fi
     - name: Create new sprint branch
       run: |
